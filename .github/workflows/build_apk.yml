@@ -34,7 +34,7 @@ jobs:
     # /dev/disk/azure/root-part1 is / ("slow disk")
     # /dev/disk/azure/resource-part1 is a 14 GB ephemeral SSD disk mounted in /mnt
 
-    # We store the source-code repository (kiwibrowser/src) on /dev/disk/azure/root-part1
+    # We store the source-code repository (heetparkhiya/src) on /dev/disk/azure/root-part1
     # We store cache, dependencies and output on /dev/disk/azure/resource-part1 (SSD)
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -76,7 +76,7 @@ jobs:
       - name: Checking-out CIPD dependencies in /mnt/secondary_disk/.cipd
         uses: actions/checkout@v2
         with:
-          repository: kiwibrowser/dependencies
+          repository: heetparkhiya/dependencies
           path: ./secondary_disk/.cipd 
 
       - name: Linking .cipd in the proper path and copying .gclient and .gclient_entries
@@ -168,7 +168,7 @@ jobs:
         run: ln -s /mnt/cache $HOME/
 
       - name: Downloading binary objects cache to $HOME/cache
-        run: rclone copy --fast-list --transfers=128 cache:kiwibrowser-ccache-${{ matrix.platform }} $HOME/cache
+        run: rclone copy --fast-list --transfers=128 cache:heetparkhiya-ccache-${{ matrix.platform }} $HOME/cache
 
       - name: Checking available disk-space after downloading cache
         run: df -h
@@ -199,7 +199,7 @@ jobs:
         run: df -h
 
       - name: Creating rclone config to upload the cache
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
+        if: ${{ github.repository_owner == 'heetparkhiya' }}
         run: |
           echo '[sync]' > $HOME/.config/rclone/rclone.conf
           echo 'type = sftp' >> $HOME/.config/rclone/rclone.conf
@@ -225,8 +225,8 @@ jobs:
         run: ninja -C ./secondary_disk/out/android_${{ matrix.platform }} chrome/gpu
 
       - name: Uploading binary objects to cache
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
-        run: rclone copy --fast-list --transfers=32 $HOME/cache/ sync:kiwibrowser-ccache-${{ matrix.platform }}/
+        if: ${{ github.repository_owner == 'heetparkhiya' }}
+        run: rclone copy --fast-list --transfers=32 $HOME/cache/ sync:heetparkhiya-ccache-${{ matrix.platform }}/
   
       - name: Compiling source-code (components/version_info)
         run: ninja -C ./secondary_disk/out/android_${{ matrix.platform }} components/version_info
@@ -244,8 +244,8 @@ jobs:
         run: ninja -C ./secondary_disk/out/android_${{ matrix.platform }} chrome/browser
 
       - name: Uploading binary objects to cache
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
-        run: rclone copy --fast-list --transfers=32 $HOME/cache/ sync:kiwibrowser-ccache-${{ matrix.platform }}/
+        if: ${{ github.repository_owner == 'heetparkhiya' }}
+        run: rclone copy --fast-list --transfers=32 $HOME/cache/ sync:heetparkhiya-ccache-${{ matrix.platform }}/
 
       - name: Compiling source-code (chrome/common)
         run: ninja -C ./secondary_disk/out/android_${{ matrix.platform }} chrome/common
@@ -281,8 +281,8 @@ jobs:
         run: ninja -C ./secondary_disk/out/android_${{ matrix.platform }} chrome_public_apk
 
       - name: Uploading binary objects to cache
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
-        run: rclone copy --fast-list --transfers=32 $HOME/cache/ sync:kiwibrowser-ccache-${{ matrix.platform }}/
+        if: ${{ github.repository_owner == 'heetparkhiya' }}
+        run: rclone copy --fast-list --transfers=32 $HOME/cache/ sync:heetparkhiya-ccache-${{ matrix.platform }}/
 
       - name: Generating native symbols mapping
         run: |
@@ -317,11 +317,11 @@ jobs:
 
     steps:
       - name: Installing rclone
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
+        if: ${{ github.repository_owner == 'heetparkhiya' }}
         run: curl https://rclone.org/install.sh | sudo bash -s beta
 
       - name: Creating rclone config to upload the APK files
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
+        if: ${{ github.repository_owner == 'heetparkhiya' }}
         run: |
           mkdir -p $HOME/.config/rclone/
           echo '[sync]' > $HOME/.config/rclone/rclone.conf
@@ -336,7 +336,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
         with:
-          owner: "kiwibrowser"
+          owner: "heetparkhiya"
           repo: "src"
           tag_name: ${{ github.run_id }}
           release_name: Generation ${{ github.run_id }}
@@ -527,37 +527,37 @@ jobs:
           asset_content_type: application/vnd.android.package-archive
 
       - name: Uploading artifacts to storage
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
+        if: ${{ github.repository_owner == 'heetparkhiya' }}
         run: |
-          rclone copy --fast-list --transfers=16 ./apk-arm/ChromePublic.apk sync:kiwibrowser-builds/${{ github.run_id }}/arm/
-          rclone copy --fast-list --transfers=16 ./apk-arm64/ChromePublic.apk sync:kiwibrowser-builds/${{ github.run_id }}/arm64/
-          rclone copy --fast-list --transfers=16 ./apk-x86/ChromePublic.apk sync:kiwibrowser-builds/${{ github.run_id }}/x86/
-          rclone copy --fast-list --transfers=16 ./apk-x64/ChromePublic.apk sync:kiwibrowser-builds/${{ github.run_id }}/x64/
-          rclone copy --fast-list --transfers=16 ./apk-arm/ChromePublic.apk.mapping sync:kiwibrowser-builds/${{ github.run_id }}/arm/
-          rclone copy --fast-list --transfers=16 ./apk-arm64/ChromePublic.apk.mapping sync:kiwibrowser-builds/${{ github.run_id }}/arm64/
-          rclone copy --fast-list --transfers=16 ./apk-x86/ChromePublic.apk.mapping sync:kiwibrowser-builds/${{ github.run_id }}/x86/
-          rclone copy --fast-list --transfers=16 ./apk-x64/ChromePublic.apk.mapping sync:kiwibrowser-builds/${{ github.run_id }}/x64/
+          rclone copy --fast-list --transfers=16 ./apk-arm/ChromePublic.apk sync:heetparkhiya-builds/${{ github.run_id }}/arm/
+          rclone copy --fast-list --transfers=16 ./apk-arm64/ChromePublic.apk sync:heetparkhiya-builds/${{ github.run_id }}/arm64/
+          rclone copy --fast-list --transfers=16 ./apk-x86/ChromePublic.apk sync:heetparkhiya-builds/${{ github.run_id }}/x86/
+          rclone copy --fast-list --transfers=16 ./apk-x64/ChromePublic.apk sync:heetparkhiya-builds/${{ github.run_id }}/x64/
+          rclone copy --fast-list --transfers=16 ./apk-arm/ChromePublic.apk.mapping sync:heetparkhiya-builds/${{ github.run_id }}/arm/
+          rclone copy --fast-list --transfers=16 ./apk-arm64/ChromePublic.apk.mapping sync:heetparkhiya-builds/${{ github.run_id }}/arm64/
+          rclone copy --fast-list --transfers=16 ./apk-x86/ChromePublic.apk.mapping sync:heetparkhiya-builds/${{ github.run_id }}/x86/
+          rclone copy --fast-list --transfers=16 ./apk-x64/ChromePublic.apk.mapping sync:heetparkhiya-builds/${{ github.run_id }}/x64/
 
       - name: Signing and uploading release to GitHub
-        if: ${{ github.repository_owner == 'kiwibrowser' && !contains(github.event.head_commit.message, 'release') }}
+        if: ${{ github.repository_owner == 'heetparkhiya' && !contains(github.event.head_commit.message, 'release') }}
         run: |
           curl 'https://${{ secrets.RELEASE_HOST }}/?run_id=${{ github.run_id }}&dk=${{ secrets.DEPLOY_KEY }}'
 
       - name: Signing and uploading release to GitHub and send to the Play Store
-        if: ${{ github.repository_owner == 'kiwibrowser' && contains(github.event.head_commit.message, 'release') }}
+        if: ${{ github.repository_owner == 'heetparkhiya' && contains(github.event.head_commit.message, 'release') }}
         run: |
           curl 'https://${{ secrets.RELEASE_HOST }}/?run_id=${{ github.run_id }}&dk=${{ secrets.DEPLOY_KEY }}&publish=1'
 
       - name: Downloading artifacts from storage
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
+        if: ${{ github.repository_owner == 'heetparkhiya' }}
         run: |
-          rclone copy --fast-list --transfers=128 sync:kiwibrowser-builds/${{ github.run_id }}/arm/ ./apk-arm 
-          rclone copy --fast-list --transfers=128 sync:kiwibrowser-builds/${{ github.run_id }}/arm64/ ./apk-arm64
-          rclone copy --fast-list --transfers=128 sync:kiwibrowser-builds/${{ github.run_id }}/x86/ ./apk-x86
-          rclone copy --fast-list --transfers=128 sync:kiwibrowser-builds/${{ github.run_id }}/x64/ ./apk-x64
+          rclone copy --fast-list --transfers=128 sync:heetparkhiya-builds/${{ github.run_id }}/arm/ ./apk-arm 
+          rclone copy --fast-list --transfers=128 sync:heetparkhiya-builds/${{ github.run_id }}/arm64/ ./apk-arm64
+          rclone copy --fast-list --transfers=128 sync:heetparkhiya-builds/${{ github.run_id }}/x86/ ./apk-x86
+          rclone copy --fast-list --transfers=128 sync:heetparkhiya-builds/${{ github.run_id }}/x64/ ./apk-x64
 
       - name: Uploading release asset (arm-signed)
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
+        if: ${{ github.repository_owner == 'heetparkhiya' }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
@@ -568,7 +568,7 @@ jobs:
           asset_content_type: application/vnd.android.package-archive
 
       - name: Uploading release asset (arm64-signed)
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
+        if: ${{ github.repository_owner == 'heetparkhiya' }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
@@ -579,7 +579,7 @@ jobs:
           asset_content_type: application/vnd.android.package-archive
 
       - name: Uploading release asset (x86-signed)
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
+        if: ${{ github.repository_owner == 'heetparkhiya' }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
@@ -590,7 +590,7 @@ jobs:
           asset_content_type: application/vnd.android.package-archive
 
       - name: Uploading release asset (x64-signed)
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
+        if: ${{ github.repository_owner == 'heetparkhiya' }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
@@ -600,8 +600,5 @@ jobs:
           asset_name: Kiwi-${{ github.run_id }}-x64-signed.apk
           asset_content_type: application/vnd.android.package-archive
           
-      - name: Send announcement on Discord
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
-        run: |
-          curl -H 'Content-Type: application/json' -X POST -d '{"username": "Kiwi Builder", "content": "A new build of Kiwi Browser is available: https://github.com/kiwibrowser/src/releases/tag/${{ github.run_id }}"}' ${{ secrets.DISCORD_WEBHOOK }}
+  
 
